@@ -3,9 +3,10 @@ from datetime import timedelta
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
+from flask_sqlalchemy import SQLAlchemy
 
-from item import Item, ItemList
-from user import UserRegister
+from resources.item import Item, ItemList
+from resources.user import UserRegister
 from security import authenticate, identity
 
 app = Flask(__name__)
