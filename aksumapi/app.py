@@ -3,14 +3,18 @@ from datetime import timedelta
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
 from resources.item import Item, ItemList
 from resources.user import UserRegister
 from security import authenticate, identity
+from db import db
+
 
 app = Flask(__name__)
 app.secret_key = "c933ac116227737997d2e27a6d4cd6bf0d3bac640a5ec422c1d203ac58df1487"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 api = Api(app)
 
 # This changes the authentication endpoint from the default, '/auth' to '/login'. 
@@ -27,9 +31,17 @@ def jwt_error_handler(error):
     }), error.status_code
 
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 api.add_resource(Item, '/item/<string:name>') #http://127.0.0.1:3000/item/book
 api.add_resource(ItemList, '/items') #http://127.0.0.1:3000/items
 api.add_resource(UserRegister, '/register') #http://127.0.0.1:3000/register
 
 if __name__ == '__main__':
+    db.init_app(app)
     app.run(port=3000, debug=True)
+
+
+# TODO: RESTRUCTURE ENTIRE PACKAGE STRUCTURE

@@ -1,48 +1,26 @@
 from typing import Optional
 
-import sqlite3
+from db import db
 
-class UserModel:
-    TABLE_NAME = 'users'
+class UserModel(db.Model):
+    _table_name = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(60), nullable=False)
 
     def __init__(self, id_, username, password):
         self.id = id_
         self.username = username
         self.password = password
 
+    def __repr__(self):
+        return f"UserModel('{self.username}')"
+
     @classmethod
     def find_by_username(cls, username: str):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = f"SELECT * FROM {cls.TABLE_NAME} WHERE username=?"
-        result = cursor.execute(query, (username,))
-
-        row = result.fetchone()
-        if row:
-            user = cls(*row)
-        else:
-            user = None
-
-        # always remember to close the connection before returning.
-        connection.close()
-        return user
+        return cls.query.filter_by(username=username).first()
 
     @classmethod
     def find_by_id(cls, id_):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = f"SELECT * FROM {cls.TABLE_NAME} WHERE id=?"
-        result = cursor.execute(query, (id_,))
-
-        row = result.fetchone()
-        if row:
-            # user = cls(row[0], row[1], row[2])
-            user = cls(*row)
-        else:
-            user = None
-
-        # always remember to close the connection before returning.
-        connection.close()
-        return user
+        return cls.query.filter_by(id=id_).first()

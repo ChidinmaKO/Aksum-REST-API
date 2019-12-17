@@ -11,12 +11,12 @@ cursor = connection.cursor()
 create_table = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username text, password text)"
 cursor.execute(create_table)
 
-create_table2 = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
-cursor.execute(create_table2)
+create_table = "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name text, price real)"
+cursor.execute(create_table)
 
 # insert into the table
-insert_query = "INSERT INTO users VALUES (?, ?, ?)"
-insert_query2 = "INSERT INTO items VALUES (?, ?)"
+# insert_query = "INSERT INTO users VALUES (?, ?, ?)"
+# insert_query2 = "INSERT INTO items VALUES (?, ?)"
 
 # commit & save data
 connection.commit()

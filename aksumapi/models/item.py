@@ -1,9 +1,14 @@
 from typing import List, Union, Optional
 
-import sqlite3
+from db import db
 
-class ItemModel:
-    TABLE_NAME = 'items'
+
+class ItemModel(db.Model):
+    _table_name = 'items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+    price = db.Column(db.Float(precision=2), nullable=False)
 
     def __init__(self, name, price):
         self.name = name
@@ -12,41 +17,17 @@ class ItemModel:
     def json(self):
         return {'name': self.name, 'price': self.price}
 
+    def __repr__(self):
+        return f"ItemModel('{self.name}', '{self.price}')"
+
     @classmethod
     def find_by_itemname(cls, name: str):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        return cls.query.filter_by(name=name).first()
 
-        query = f"SELECT * FROM {cls.TABLE_NAME} items WHERE name=?"
-        result = cursor.execute(query, (name,))
-        row = result.fetchone()
+    def save_item_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
-        connection.close()
-        
-        if row:
-            item = cls(*row)
-            return item
-        else:
-            item = None
-        
-        return item
-
-    def insert_item(self):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = f"INSERT INTO {self.TABLE_NAME} VALUES (?, ?)"
-        cursor.execute(query, (self.name, self.price))
-
-        connection.commit()
-        connection.close()
-
-    def update_item(self):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = f"UPDATE {self.TABLE_NAME} SET price=? WHERE name=?"
-        cursor.execute(query, (self.price, self.name))
-
-        connection.commit()
-        connection.close()
+    def delete_item(self):
+        db.session.delete(self)
+        db.session.commit()
