@@ -1,13 +1,10 @@
 from typing import Optional
 
 from flask_restful import Resource, reqparse
-import sqlite3
 
 from models.user import UserModel
 
 class UserRegister(Resource):
-    TABLE_NAME = 'users'
-
     parser = reqparse.RequestParser()
     parser.add_argument('username',
         type=str,
@@ -23,16 +20,16 @@ class UserRegister(Resource):
     def post(self):
         data = UserRegister.parser.parse_args()
 
-        if UserModel.find_by_username(data['username']):
+        user = UserModel.find_by_username(data['username'])
+
+        if user:
             return {"message": "A user with that username already exists"}, 400
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        user = UserModel(**data)
 
-        query = f"INSERT INTO {self.TABLE_NAME} VALUES (NULL, ?, ?)"
-        cursor.execute(query, (data['username'], data['password']))
-
-        connection.commit()
-        connection.close()
-
-        return {"message": "User created successfully!"}, 201
+        try:
+            user.save_user_to_db()
+        except:
+            return {"message": f"An error occurred! 😞"}, 500
+        
+        return {"message": "User created successfully!"}, 201        

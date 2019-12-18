@@ -13,8 +13,13 @@ class Item(Resource):
         required=True,
         help="This field cannot be left blank!"
     )
+    parser.add_argument('store_id',
+        type=int,
+        required=True,
+        help="This field cannot be left blank - Every item needs a store id!"
+    )
 
-    # GET /items
+    # GET /item/<string:name>
     def get(self, name: str):
         item = ItemModel.find_by_itemname(name)
     
@@ -24,7 +29,7 @@ class Item(Resource):
 
     # POST /item/<string:name>
     @jwt_required()
-    def post(self, name):
+    def post(self, name: str):
         item = ItemModel.find_by_itemname(name)
         if item:
             return {'message': f"An item with the name {name} already exists!"}, 400
@@ -36,7 +41,7 @@ class Item(Resource):
         try:
             item.save_item_to_db()
         except:
-            return {'message': f"An error occurred inserting the item 😞"}, 500
+            return {'message': f"An error occurred whilst inserting the item 😞"}, 500
 
         return item.json(), 201
 
@@ -74,19 +79,8 @@ class Item(Resource):
 
 
 class ItemList(Resource):
-    TABLE_NAME = 'items'
     # GET /items
-    # def get(self)-> List:
-    #     connection = sqlite3.connect('data.db')
-    #     cursor = connection.cursor()
-
-    #     query = f"SELECT * FROM {ItemModel.TABLE_NAME}"
-    #     result = cursor.execute(query)
-    #     items = []
-
-    #     for row in result:
-    #         items.append({'name': row[0], 'price': row[1]})
-        
-    #     connection.close()
-
-    #     return {'items': items}
+    def get(self)-> List:
+        items = ItemModel.query.all()
+        # return {'items': [item.json() for item in items]}
+        return {'items': list(map(lambda item: item.json(), items))}

@@ -3,12 +3,13 @@ from datetime import timedelta
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
-# from flask_sqlalchemy import SQLAlchemy
 
+from db import db
 from resources.item import Item, ItemList
+from resources.store import Store, StoreList
+# from models.store import StoreModel
 from resources.user import UserRegister
 from security import authenticate, identity
-from db import db
 
 
 app = Flask(__name__)
@@ -37,6 +38,8 @@ def create_tables():
 
 api.add_resource(Item, '/item/<string:name>') #http://127.0.0.1:3000/item/book
 api.add_resource(ItemList, '/items') #http://127.0.0.1:3000/items
+api.add_resource(Store, '/store/<string:name>') #http://127.0.0.1:3000/store/diamond
+api.add_resource(StoreList, '/stores') #http://127.0.0.1:3000/stores
 api.add_resource(UserRegister, '/register') #http://127.0.0.1:3000/register
 
 if __name__ == '__main__':
