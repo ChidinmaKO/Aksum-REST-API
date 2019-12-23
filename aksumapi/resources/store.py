@@ -7,6 +7,11 @@ from models.store import StoreModel
 
 class Store(Resource):
     parser = reqparse.RequestParser()
+    parser.add_argument('name',
+        type=str,
+        required=True,
+        help="This field cannot be left blank!"
+    )
 
     # GET /store/<string:name>
     def get(self, name: str):
@@ -31,6 +36,27 @@ class Store(Resource):
         except:
             return {'message': f"An error occurred whilst inserting the store 😞"}, 500
 
+        return store.json(), 201
+
+    # PUT /store/<string:name>
+    @jwt_required()
+    def put(self, name: str):
+        data = Store.parser.parse_args()
+        store = StoreModel.find_by_storename(name)
+        
+        if store:
+            try:
+                store.name = data['name']
+                store.save_store_to_db()
+            except:
+                return {'message': f"An error occurred updating this store"}, 500
+        else:
+            try:
+                store = StoreModel(name)
+                store.save_store_to_db()
+            except:
+                return {'message': f"An error occurred inserting this item"}, 500
+        
         return store.json(), 201
 
     # DELETE /store/<string:name>
