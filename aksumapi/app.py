@@ -7,7 +7,6 @@ from flask_jwt import JWT
 from db import db
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
-# from models.store import StoreModel
 from resources.user import UserRegister
 from security import authenticate, identity
 
