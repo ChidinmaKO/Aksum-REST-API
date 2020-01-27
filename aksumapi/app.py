@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.secret_key = "c933ac116227737997d2e27a6d4cd6bf0d3bac640a5ec422c1d203ac58df1487"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(app)
 
 # This changes the authentication endpoint from the default, '/auth' to '/login'. 

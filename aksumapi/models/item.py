@@ -19,7 +19,12 @@ class ItemModel(db.Model):
         self.store_id = store_id
 
     def json(self):
-        return {'name': self.name, 'price': self.price}
+        return {
+            'id': self.id,
+            'name': self.name, 
+            'price': self.price, 
+            'store_id': self.store_id
+        }
 
     def __repr__(self):
         return f"ItemModel('{self.name}', '{self.price}')"
@@ -27,6 +32,10 @@ class ItemModel(db.Model):
     @classmethod
     def find_by_itemname(cls, name: str):
         return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def find_all(cls):
+        return cls.query.all()
 
     def save_item_to_db(self):
         db.session.add(self)
