@@ -80,6 +80,7 @@ class Item(Resource):
 
 class ItemList(Resource):
     # GET /items
+    @jwt_required()
     def get(self)-> List:
         items = ItemModel.find_all()
         return {'items': [item.json() for item in items]}

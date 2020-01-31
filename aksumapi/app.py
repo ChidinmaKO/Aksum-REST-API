@@ -7,7 +7,7 @@ from flask_jwt import JWT
 from db import db
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
-from resources.user import UserRegister
+from resources.user import User, UserList, UserRegister
 from security import authenticate, identity
 
 
@@ -40,6 +40,8 @@ api.add_resource(Item, '/item/<string:name>') #http://127.0.0.1:3000/item/book
 api.add_resource(ItemList, '/items') #http://127.0.0.1:3000/items
 api.add_resource(Store, '/store/<string:name>') #http://127.0.0.1:3000/store/diamond
 api.add_resource(StoreList, '/stores') #http://127.0.0.1:3000/stores
+api.add_resource(User, '/user/<int:user_id>') #http://127.0.0.1:3000/user/1
+api.add_resource(UserList, '/users') #http://127.0.0.1:3000/users
 api.add_resource(UserRegister, '/register') #http://127.0.0.1:3000/register
 
 if __name__ == '__main__':

@@ -13,6 +13,12 @@ class UserModel(db.Model):
         self.username = username
         self.password = password
 
+    def json(self):
+        return {
+            'id': self.id,
+            'username': self.username
+        }
+
     def __repr__(self):
         return f"UserModel('{self.username}')"
 
@@ -24,6 +30,14 @@ class UserModel(db.Model):
     def find_by_id(cls, id_):
         return cls.query.filter_by(id=id_).first()
 
+    @classmethod
+    def find_all(cls):
+        return cls.query.all()
+
     def save_user_to_db(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete_user(self):
+        db.session.delete(self)
         db.session.commit()
