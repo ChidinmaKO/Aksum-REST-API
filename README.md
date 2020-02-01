@@ -14,7 +14,7 @@
 ## Built With
 - [Flask](http://flask.palletsprojects.com/en/1.1.x/)
 - [Flask-RESTful](https://flask-restful.readthedocs.io/)
-- [Flask-JWT](https://pythonhosted.org/Flask-JWT/)
+- [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/)
 - [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 - [Werkzeug](https://werkzeug.palletsprojects.com/en/0.16.x/utils/)
 

@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 
 from models.store import StoreModel
 
@@ -23,7 +23,7 @@ class Store(Resource):
         return {'message': f"Store with name '{name}' not found."}, 404
 
     # POST /store/<string:name>
-    @jwt_required()
+    @jwt_required
     def post(self, name: str):
         store = StoreModel.find_by_storename(name)
 
@@ -39,7 +39,7 @@ class Store(Resource):
         return store.json(), 201
 
     # PUT /store/<string:name>
-    @jwt_required()
+    @jwt_required
     def put(self, name: str):
         data = Store.parser.parse_args()
         store = StoreModel.find_by_storename(name)
@@ -60,7 +60,7 @@ class Store(Resource):
         return store.json(), 201
 
     # DELETE /store/<string:name>
-    @jwt_required()
+    @jwt_required
     def delete(self, name: str):
         store = StoreModel.find_by_storename(name)
 

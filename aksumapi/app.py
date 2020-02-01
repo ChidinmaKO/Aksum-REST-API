@@ -2,27 +2,24 @@ from datetime import timedelta
 
 from flask import Flask, jsonify
 from flask_restful import Api
-from flask_jwt import JWT
+from flask_jwt_extended import JWTManager
 
 from db import db
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
-from resources.user import User, UserList, UserRegister
-from security import authenticate, identity
+from resources.user import User, UserList, UserLogin, UserRegister
 
 
 app = Flask(__name__)
-app.secret_key = "c933ac116227737997d2e27a6d4cd6bf0d3bac640a5ec422c1d203ac58df1487"
+app.config['JWT_SECRET_KEY'] = "c933ac116227737997d2e27a6d4cd6bf0d3bac640a5ec422c1d203ac58df1487"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(app)
 
-# This changes the authentication endpoint from the default, '/auth' to '/login'. 
-# It must be done before creating the JWT instance!
-app.config['JWT_AUTH_URL_RULE'] = '/login' 
-jwt = JWT(app, authenticate, identity) 
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1200) # This configures JWT to expire in 20 minutes.
+jwt = JWTManager(app) 
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=1200) # This configures the access token to expire in 20 minutes.
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=1000) # This configures the refresh token to expire in 20 minutes.
 
 # handle JWT errors
 def jwt_error_handler(error):
@@ -42,6 +39,7 @@ api.add_resource(Store, '/store/<string:name>') #http://127.0.0.1:3000/store/dia
 api.add_resource(StoreList, '/stores') #http://127.0.0.1:3000/stores
 api.add_resource(User, '/user/<int:user_id>') #http://127.0.0.1:3000/user/1
 api.add_resource(UserList, '/users') #http://127.0.0.1:3000/users
+api.add_resource(UserLogin, '/login') #http://127.0.0.1:3000/login
 api.add_resource(UserRegister, '/register') #http://127.0.0.1:3000/register
 
 if __name__ == '__main__':
