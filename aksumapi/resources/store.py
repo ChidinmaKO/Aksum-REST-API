@@ -1,7 +1,7 @@
 from typing import List, Union, Optional
 
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_optional, jwt_required
 
 from models.store import StoreModel
 
@@ -73,7 +73,16 @@ class Store(Resource):
 
 class StoreList(Resource):
     # GET /stores
+    @jwt_optional
     def get(self):
-        stores = StoreModel.find_all()
-        return {'stores': [store.json() for store in stores]}
+        user_id = get_jwt_identity()
+        stores = [store.json() for store in StoreModel.find_all()]
+        store_names = [store['name'] for store in stores]
+        
+        if user_id:
+            return {'stores': stores}, 200
+        return {
+            'store names': store_names,
+            'message': 'More data available if you log in.'
+        }, 200
 

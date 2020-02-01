@@ -7,7 +7,7 @@ from flask_jwt_extended import JWTManager
 from db import db
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
-from resources.user import User, UserList, UserLogin, UserRegister
+from resources.user import TokenRefresh, User, UserList, UserLogin, UserRegister
 
 
 app = Flask(__name__)
@@ -20,6 +20,12 @@ api = Api(app)
 jwt = JWTManager(app) 
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=1200) # This configures the access token to expire in 20 minutes.
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(seconds=1000) # This configures the refresh token to expire in 20 minutes.
+
+@jwt.user_claims_loader
+def add_claims_to_jwt_extended(identity):
+    if identity == 1:
+        return {'is_admin': True}
+    return {'is_admin': False}
 
 # handle JWT errors
 def jwt_error_handler(error):
@@ -37,6 +43,7 @@ api.add_resource(Item, '/item/<string:name>') #http://127.0.0.1:3000/item/book
 api.add_resource(ItemList, '/items') #http://127.0.0.1:3000/items
 api.add_resource(Store, '/store/<string:name>') #http://127.0.0.1:3000/store/diamond
 api.add_resource(StoreList, '/stores') #http://127.0.0.1:3000/stores
+api.add_resource(TokenRefresh, '/refresh') #http://127.0.0.1:3000/refresh
 api.add_resource(User, '/user/<int:user_id>') #http://127.0.0.1:3000/user/1
 api.add_resource(UserList, '/users') #http://127.0.0.1:3000/users
 api.add_resource(UserLogin, '/login') #http://127.0.0.1:3000/login
