@@ -1,7 +1,13 @@
 from typing import List, Union, Optional
 
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import get_jwt_claims, get_jwt_identity, jwt_optional, jwt_required
+from flask_jwt_extended import (
+    fresh_jwt_required, 
+    get_jwt_claims, 
+    get_jwt_identity, 
+    jwt_optional, 
+    jwt_required
+)
 
 from models.item import ItemModel
 
@@ -19,7 +25,7 @@ class Item(Resource):
         help="This field cannot be left blank - Every item needs a store id!"
     )
 
-    # GET /item/<string:name>
+    @jwt_required
     def get(self, name: str):
         item = ItemModel.find_by_itemname(name)
     
@@ -27,8 +33,7 @@ class Item(Resource):
             return item.json()
         return {'message': f"Item with name '{name}' not found"}, 404
 
-    # POST /item/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def post(self, name: str):
         item = ItemModel.find_by_itemname(name)
         if item:
@@ -45,8 +50,7 @@ class Item(Resource):
 
         return item.json(), 201
 
-    # DELETE /item/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def delete(self, name: str):
         claims = get_jwt_claims()
         if not claims['is_admin']:
@@ -60,8 +64,7 @@ class Item(Resource):
 
         return {'message': 'Item not found.'}, 404
 
-    # PUT /item/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def put(self, name: str):
         data = Item.parser.parse_args()
 
@@ -83,7 +86,6 @@ class Item(Resource):
 
 
 class ItemList(Resource):
-    # GET /items
     @jwt_optional
     def get(self)-> List:
         user_id = get_jwt_identity()

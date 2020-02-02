@@ -1,7 +1,12 @@
 from typing import List, Union, Optional
 
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import get_jwt_identity, jwt_optional, jwt_required
+from flask_jwt_extended import (
+    fresh_jwt_required, 
+    get_jwt_identity, 
+    jwt_optional, 
+    jwt_required
+)
 
 from models.store import StoreModel
 
@@ -13,7 +18,7 @@ class Store(Resource):
         help="This field cannot be left blank!"
     )
 
-    # GET /store/<string:name>
+    @jwt_required
     def get(self, name: str):
         store = StoreModel.find_by_storename(name)
 
@@ -22,8 +27,7 @@ class Store(Resource):
 
         return {'message': f"Store with name '{name}' not found."}, 404
 
-    # POST /store/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def post(self, name: str):
         store = StoreModel.find_by_storename(name)
 
@@ -38,8 +42,7 @@ class Store(Resource):
 
         return store.json(), 201
 
-    # PUT /store/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def put(self, name: str):
         data = Store.parser.parse_args()
         store = StoreModel.find_by_storename(name)
@@ -59,8 +62,7 @@ class Store(Resource):
         
         return store.json(), 201
 
-    # DELETE /store/<string:name>
-    @jwt_required
+    @fresh_jwt_required
     def delete(self, name: str):
         store = StoreModel.find_by_storename(name)
 
@@ -72,7 +74,6 @@ class Store(Resource):
 
 
 class StoreList(Resource):
-    # GET /stores
     @jwt_optional
     def get(self):
         user_id = get_jwt_identity()
